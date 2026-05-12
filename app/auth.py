@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from typing import cast
 
 import bcrypt
 from fastapi import Depends, HTTPException, status
@@ -16,11 +17,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    return cast(bool, bcrypt.checkpw(plain_password.encode(), hashed_password.encode()))
 
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    return cast(str, bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode())
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
@@ -29,14 +30,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    return cast(str, jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm))
 
 
 def authenticate_user(db: Session, username: str, password: str) -> models.User | None:
     user = db.query(models.User).filter(models.User.username == username).first()
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(password, cast(str, user.hashed_password)):
         return None
-    return user
+    return cast(models.User, user)
 
 
 async def get_current_user(
@@ -50,7 +51,7 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
-        username: str = payload.get("sub")
+        username: str | None = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = schemas.TokenData(username=username)
@@ -60,7 +61,7 @@ async def get_current_user(
     user = db.query(models.User).filter(models.User.username == token_data.username).first()
     if user is None:
         raise credentials_exception
-    return user
+    return cast(models.User, user)
 
 
 async def get_current_active_user(

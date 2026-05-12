@@ -28,7 +28,7 @@ def list_books(
 
     total = query.count()
     items = query.offset((page - 1) * page_size).limit(page_size).all()
-    return schemas.BookListResponse(total=total, page=page, page_size=page_size, items=items)
+    return schemas.BookListResponse(total=total, page=page, page_size=page_size, items=items)  # type: ignore[arg-type]
 
 
 @router.post("", response_model=schemas.BookResponse, status_code=201)

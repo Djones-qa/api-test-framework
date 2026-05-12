@@ -1,11 +1,10 @@
 from functools import lru_cache
 
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = ConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env")
 
     app_name: str = "Bookstore API"
     app_version: str = "1.0.0"
