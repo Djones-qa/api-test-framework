@@ -4,9 +4,9 @@ Contract tests — validate that API responses conform to expected schemas.
 These tests act as a "contract" between the API producer and consumers:
 if a schema changes in a breaking way, these tests catch it immediately.
 """
-import pytest
-from jsonschema import validate, ValidationError
 
+import pytest
+from jsonschema import ValidationError, validate
 
 # ── JSON Schema definitions (consumer-side contract) ─────────────────────────
 
@@ -14,17 +14,17 @@ BOOK_SCHEMA = {
     "type": "object",
     "required": ["id", "title", "author", "isbn", "price", "in_stock", "created_at"],
     "properties": {
-        "id":             {"type": "integer", "minimum": 1},
-        "title":          {"type": "string", "minLength": 1},
-        "author":         {"type": "string", "minLength": 1},
-        "isbn":           {"type": "string", "pattern": r"^\d{10}(\d{3})?$"},
-        "price":          {"type": "number", "exclusiveMinimum": 0},
-        "genre":          {"type": ["string", "null"]},
+        "id": {"type": "integer", "minimum": 1},
+        "title": {"type": "string", "minLength": 1},
+        "author": {"type": "string", "minLength": 1},
+        "isbn": {"type": "string", "pattern": r"^\d{10}(\d{3})?$"},
+        "price": {"type": "number", "exclusiveMinimum": 0},
+        "genre": {"type": ["string", "null"]},
         "published_year": {"type": ["integer", "null"]},
-        "in_stock":       {"type": "boolean"},
-        "owner_id":       {"type": ["integer", "null"]},
-        "created_at":     {"type": "string", "format": "date-time"},
-        "updated_at":     {"type": ["string", "null"], "format": "date-time"},
+        "in_stock": {"type": "boolean"},
+        "owner_id": {"type": ["integer", "null"]},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": ["string", "null"], "format": "date-time"},
     },
     "additionalProperties": False,
 }
@@ -33,10 +33,10 @@ BOOK_LIST_SCHEMA = {
     "type": "object",
     "required": ["total", "page", "page_size", "items"],
     "properties": {
-        "total":     {"type": "integer", "minimum": 0},
-        "page":      {"type": "integer", "minimum": 1},
+        "total": {"type": "integer", "minimum": 0},
+        "page": {"type": "integer", "minimum": 1},
         "page_size": {"type": "integer", "minimum": 1},
-        "items":     {"type": "array", "items": BOOK_SCHEMA},
+        "items": {"type": "array", "items": BOOK_SCHEMA},
     },
     "additionalProperties": False,
 }
@@ -45,10 +45,10 @@ USER_SCHEMA = {
     "type": "object",
     "required": ["id", "username", "email", "is_active", "created_at"],
     "properties": {
-        "id":         {"type": "integer", "minimum": 1},
-        "username":   {"type": "string"},
-        "email":      {"type": "string", "format": "email"},
-        "is_active":  {"type": "boolean"},
+        "id": {"type": "integer", "minimum": 1},
+        "username": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "is_active": {"type": "boolean"},
         "created_at": {"type": "string", "format": "date-time"},
     },
     "additionalProperties": False,
@@ -59,7 +59,7 @@ TOKEN_SCHEMA = {
     "required": ["access_token", "token_type"],
     "properties": {
         "access_token": {"type": "string", "minLength": 1},
-        "token_type":   {"type": "string", "enum": ["bearer"]},
+        "token_type": {"type": "string", "enum": ["bearer"]},
     },
     "additionalProperties": False,
 }
@@ -68,8 +68,8 @@ HEALTH_SCHEMA = {
     "type": "object",
     "required": ["status", "version", "database"],
     "properties": {
-        "status":   {"type": "string", "enum": ["ok", "degraded", "error"]},
-        "version":  {"type": "string"},
+        "status": {"type": "string", "enum": ["ok", "degraded", "error"]},
+        "version": {"type": "string"},
         "database": {"type": "string", "enum": ["ok", "error"]},
     },
     "additionalProperties": False,
@@ -86,6 +86,7 @@ ERROR_SCHEMA = {
 
 # ── Contract test helpers ─────────────────────────────────────────────────────
 
+
 def assert_conforms(data: dict, schema: dict) -> None:
     """Assert that `data` validates against `schema`, with a clear failure message."""
     try:
@@ -95,6 +96,7 @@ def assert_conforms(data: dict, schema: dict) -> None:
 
 
 # ── Health endpoint contract ──────────────────────────────────────────────────
+
 
 class TestHealthContract:
     def test_health_response_schema(self, client):
@@ -113,9 +115,14 @@ class TestHealthContract:
 
 # ── Auth endpoint contracts ───────────────────────────────────────────────────
 
+
 class TestAuthContract:
     def test_register_response_schema(self, client):
-        payload = {"username": "contractuser", "email": "contract@test.com", "password": "securepass"}
+        payload = {
+            "username": "contractuser",
+            "email": "contract@test.com",
+            "password": "securepass",
+        }
         response = client.post("/auth/register", json=payload)
         assert response.status_code == 201
         assert_conforms(response.json(), USER_SCHEMA)
@@ -153,6 +160,7 @@ class TestAuthContract:
 
 
 # ── Book endpoint contracts ───────────────────────────────────────────────────
+
 
 class TestBookContract:
     def test_list_books_schema(self, client, sample_books):

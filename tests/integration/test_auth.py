@@ -4,7 +4,6 @@ Integration tests for the /auth endpoints.
 These tests exercise the full request/response cycle including
 database writes, password hashing, and JWT issuance.
 """
-import pytest
 
 
 class TestRegister:

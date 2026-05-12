@@ -1,9 +1,9 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional
 from datetime import datetime
 
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
+
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
@@ -27,18 +27,19 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    username: str | None = None
 
 
 # ── Books ─────────────────────────────────────────────────────────────────────
+
 
 class BookBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     author: str = Field(..., min_length=1, max_length=100)
     isbn: str = Field(..., pattern=r"^\d{10}(\d{3})?$")
     price: float = Field(..., gt=0)
-    genre: Optional[str] = Field(None, max_length=50)
-    published_year: Optional[int] = Field(None, ge=1000, le=2100)
+    genre: str | None = Field(None, max_length=50)
+    published_year: int | None = Field(None, ge=1000, le=2100)
     in_stock: bool = True
 
     @field_validator("isbn")
@@ -55,19 +56,19 @@ class BookCreate(BookBase):
 
 
 class BookUpdate(BaseModel):
-    title: Optional[str] = Field(None, min_length=1, max_length=200)
-    author: Optional[str] = Field(None, min_length=1, max_length=100)
-    price: Optional[float] = Field(None, gt=0)
-    genre: Optional[str] = Field(None, max_length=50)
-    published_year: Optional[int] = Field(None, ge=1000, le=2100)
-    in_stock: Optional[bool] = None
+    title: str | None = Field(None, min_length=1, max_length=200)
+    author: str | None = Field(None, min_length=1, max_length=100)
+    price: float | None = Field(None, gt=0)
+    genre: str | None = Field(None, max_length=50)
+    published_year: int | None = Field(None, ge=1000, le=2100)
+    in_stock: bool | None = None
 
 
 class BookResponse(BookBase):
     id: int
-    owner_id: Optional[int]
+    owner_id: int | None
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: datetime | None
 
     model_config = {"from_attributes": True}
 
@@ -80,6 +81,7 @@ class BookListResponse(BaseModel):
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
+
 
 class HealthResponse(BaseModel):
     status: str

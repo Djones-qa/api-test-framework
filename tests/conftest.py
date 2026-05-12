@@ -1,22 +1,21 @@
 """
 Shared pytest fixtures for the Bookstore API test suite.
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
-from app.database import Base, get_db
-from app.auth import hash_password
 from app import models
+from app.auth import hash_password
+from app.database import Base, get_db
+from app.main import app
 
 # ── In-memory SQLite for tests ────────────────────────────────────────────────
 TEST_DATABASE_URL = "sqlite:///./test_bookstore.db"
 
-engine = create_engine(
-    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -45,6 +44,7 @@ def db_session(setup_database):
 @pytest.fixture()
 def client(db_session):
     """FastAPI TestClient wired to the test database session."""
+
     def override_get_db():
         try:
             yield db_session
@@ -58,6 +58,7 @@ def client(db_session):
 
 
 # ── Reusable data factories ───────────────────────────────────────────────────
+
 
 @pytest.fixture()
 def test_user(db_session) -> models.User:
@@ -121,16 +122,51 @@ def sample_book(db_session, test_user) -> models.Book:
 def sample_books(db_session, test_user) -> list[models.Book]:
     """Create a batch of books for list/filter tests."""
     books_data = [
-        {"title": "The Pragmatic Programmer", "author": "David Thomas", "isbn": "9780135957059",
-         "price": 49.99, "genre": "Programming", "published_year": 2019, "in_stock": True},
-        {"title": "Design Patterns", "author": "Gang of Four", "isbn": "9780201633610",
-         "price": 54.99, "genre": "Programming", "published_year": 1994, "in_stock": True},
-        {"title": "Dune", "author": "Frank Herbert", "isbn": "9780441013593",
-         "price": 12.99, "genre": "Science Fiction", "published_year": 1965, "in_stock": False},
-        {"title": "Foundation", "author": "Isaac Asimov", "isbn": "9780553293357",
-         "price": 10.99, "genre": "Science Fiction", "published_year": 1951, "in_stock": True},
-        {"title": "Refactoring", "author": "Martin Fowler", "isbn": "9780201485677",
-         "price": 44.99, "genre": "Programming", "published_year": 1999, "in_stock": True},
+        {
+            "title": "The Pragmatic Programmer",
+            "author": "David Thomas",
+            "isbn": "9780135957059",
+            "price": 49.99,
+            "genre": "Programming",
+            "published_year": 2019,
+            "in_stock": True,
+        },
+        {
+            "title": "Design Patterns",
+            "author": "Gang of Four",
+            "isbn": "9780201633610",
+            "price": 54.99,
+            "genre": "Programming",
+            "published_year": 1994,
+            "in_stock": True,
+        },
+        {
+            "title": "Dune",
+            "author": "Frank Herbert",
+            "isbn": "9780441013593",
+            "price": 12.99,
+            "genre": "Science Fiction",
+            "published_year": 1965,
+            "in_stock": False,
+        },
+        {
+            "title": "Foundation",
+            "author": "Isaac Asimov",
+            "isbn": "9780553293357",
+            "price": 10.99,
+            "genre": "Science Fiction",
+            "published_year": 1951,
+            "in_stock": True,
+        },
+        {
+            "title": "Refactoring",
+            "author": "Martin Fowler",
+            "isbn": "9780201485677",
+            "price": 44.99,
+            "genre": "Programming",
+            "published_year": 1999,
+            "in_stock": True,
+        },
     ]
     books = []
     for data in books_data:

@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import OperationalError
 
-from app.config import get_settings
-from app.database import engine, Base, get_db
-from app.routers import books, auth
 from app import schemas
+from app.config import get_settings
+from app.database import Base, engine, get_db
+from app.routers import auth, books
 
 settings = get_settings()
 

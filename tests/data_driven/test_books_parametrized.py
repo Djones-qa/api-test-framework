@@ -4,9 +4,11 @@ Data-driven tests for the Bookstore API.
 Uses pytest.mark.parametrize and external JSON datasets to run the same
 test logic across many input variations without duplicating test code.
 """
+
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 
 DATASETS_DIR = Path(__file__).parent / "datasets"
 
@@ -17,6 +19,7 @@ def load_dataset(filename: str) -> list[dict]:
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def idfn(val):
     """Use the 'id' field from dataset entries as the test ID."""
@@ -78,10 +81,7 @@ def test_invalid_book_error_mentions_field(client, auth_headers, case):
     if response.status_code == 422:
         errors = response.json()["detail"]
         field_names = [
-            loc
-            for error in errors
-            for loc in error.get("loc", [])
-            if isinstance(loc, str)
+            loc for error in errors for loc in error.get("loc", []) if isinstance(loc, str)
         ]
         assert case["expected_error_field"] in field_names, (
             f"[{case['id']}] Expected field '{case['expected_error_field']}' "
@@ -153,12 +153,16 @@ def test_pagination_boundaries(client, page, page_size, expected_status):
 
 # ── Genre filter tests ────────────────────────────────────────────────────────
 
-@pytest.mark.parametrize("genre,expected_count", [
-    pytest.param("Programming", 3, id="programming_books"),
-    pytest.param("Science Fiction", 2, id="scifi_books"),
-    pytest.param("NonExistentGenre", 0, id="no_match"),
-    pytest.param("programming", 3, id="case_insensitive"),  # ilike search
-])
+
+@pytest.mark.parametrize(
+    "genre,expected_count",
+    [
+        pytest.param("Programming", 3, id="programming_books"),
+        pytest.param("Science Fiction", 2, id="scifi_books"),
+        pytest.param("NonExistentGenre", 0, id="no_match"),
+        pytest.param("programming", 3, id="case_insensitive"),  # ilike search
+    ],
+)
 def test_filter_by_genre(client, sample_books, genre, expected_count):
     """Genre filter should be case-insensitive and return correct counts."""
     response = client.get(f"/books?genre={genre}")

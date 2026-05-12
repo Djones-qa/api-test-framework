@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Optional
 
 from app import models, schemas
 from app.auth import get_current_active_user
@@ -13,9 +12,9 @@ router = APIRouter(prefix="/books", tags=["books"])
 def list_books(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    genre: Optional[str] = Query(None),
-    author: Optional[str] = Query(None),
-    in_stock: Optional[bool] = Query(None),
+    genre: str | None = Query(None),
+    author: str | None = Query(None),
+    in_stock: bool | None = Query(None),
     db: Session = Depends(get_db),
 ):
     """List all books with optional filtering and pagination."""

@@ -4,7 +4,6 @@ Integration tests for the /books endpoints.
 Covers CRUD operations, authentication guards, filtering, pagination,
 and edge cases like duplicate ISBNs and missing resources.
 """
-import pytest
 
 
 class TestListBooks:

@@ -6,15 +6,15 @@ endpoints don't regress into unacceptably slow response times during development
 
 Thresholds are intentionally generous for a test environment running on SQLite.
 """
-import time
+
 import statistics
-import pytest
+import time
 
 # Response time thresholds (seconds)
-FAST_THRESHOLD = 0.5      # Simple reads
-MEDIUM_THRESHOLD = 1.0    # Writes with hashing / DB inserts
-SLOW_THRESHOLD = 2.0      # Complex queries or auth flows
-ITERATIONS = 5            # Number of samples per endpoint
+FAST_THRESHOLD = 0.5  # Simple reads
+MEDIUM_THRESHOLD = 1.0  # Writes with hashing / DB inserts
+SLOW_THRESHOLD = 2.0  # Complex queries or auth flows
+ITERATIONS = 5  # Number of samples per endpoint
 
 
 def measure_response_time(fn) -> float:
@@ -31,27 +31,20 @@ def assert_p95_under(times: list[float], threshold: float, label: str) -> None:
     p95 = sorted_times[p95_index]
     avg = statistics.mean(times)
     print(f"\n[{label}] avg={avg:.3f}s  p95={p95:.3f}s  threshold={threshold}s")
-    assert p95 < threshold, (
-        f"[{label}] p95 response time {p95:.3f}s exceeds threshold {threshold}s"
-    )
+    assert p95 < threshold, f"[{label}] p95 response time {p95:.3f}s exceeds threshold {threshold}s"
 
 
 # ── Health endpoint ───────────────────────────────────────────────────────────
 
+
 class TestHealthPerformance:
     def test_health_response_time(self, client):
-        times = [
-            measure_response_time(lambda: client.get("/health"))
-            for _ in range(ITERATIONS)
-        ]
+        times = [measure_response_time(lambda: client.get("/health")) for _ in range(ITERATIONS)]
         assert_p95_under(times, FAST_THRESHOLD, "GET /health")
 
     def test_health_consistent_response(self, client):
         """Health endpoint should have low variance."""
-        times = [
-            measure_response_time(lambda: client.get("/health"))
-            for _ in range(ITERATIONS)
-        ]
+        times = [measure_response_time(lambda: client.get("/health")) for _ in range(ITERATIONS)]
         if len(times) > 1:
             stdev = statistics.stdev(times)
             assert stdev < 0.5, f"High variance in /health response times: stdev={stdev:.3f}s"
@@ -59,12 +52,10 @@ class TestHealthPerformance:
 
 # ── Book read endpoints ───────────────────────────────────────────────────────
 
+
 class TestBookReadPerformance:
     def test_list_books_response_time(self, client, sample_books):
-        times = [
-            measure_response_time(lambda: client.get("/books"))
-            for _ in range(ITERATIONS)
-        ]
+        times = [measure_response_time(lambda: client.get("/books")) for _ in range(ITERATIONS)]
         assert_p95_under(times, FAST_THRESHOLD, "GET /books")
 
     def test_get_single_book_response_time(self, client, sample_book):
@@ -92,6 +83,7 @@ class TestBookReadPerformance:
 
 # ── Auth endpoints ────────────────────────────────────────────────────────────
 
+
 class TestAuthPerformance:
     def test_login_response_time(self, client, test_user):
         """Login involves bcrypt verification — allow more time."""
@@ -115,6 +107,7 @@ class TestAuthPerformance:
 
 
 # ── Write endpoints ───────────────────────────────────────────────────────────
+
 
 class TestBookWritePerformance:
     def test_create_book_response_time(self, client, auth_headers):
