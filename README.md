@@ -1,7 +1,7 @@
 # 📚 Bookstore API — Python API Testing Framework
 
 [![CI](https://github.com/Djones-qa/api-test-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/Djones-qa/api-test-framework/actions/workflows/ci.yml)
-[![Nightly Performance](https://github.com/Djones-qa/api-test-framework/actions/workflows/nightly.yml/badge.svg)](https://github.com/Djones-qa/api-test-framework/actions/workflows/nightly.yml)
+[![Nightly Performance](https://github.com/Djones-qa/api-test-framework/actions/workflows/nightly.yml/badge.svg?event=schedule)](https://github.com/Djones-qa/api-test-framework/actions/workflows/nightly.yml)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-0A9EDC?logo=pytest&logoColor=white)](https://docs.pytest.org/)
