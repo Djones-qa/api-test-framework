@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ── Lint & format check ──────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install lint dependencies
+        run: pip install ruff mypy
+
+      - name: Run ruff (lint + format check)
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Run mypy (type check)
+        run: mypy app/ --ignore-missing-imports
+
+  # ── Unit / integration / contract tests ─────────────────────────────────────
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Copy env file
+        run: cp .env.example .env
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run contract tests
+        run: pytest tests/contract/ -v --tb=short --junitxml=reports/contract.xml
+
+      - name: Run integration tests
+        run: pytest tests/integration/ -v --tb=short --junitxml=reports/integration.xml
+
+      - name: Run data-driven tests
+        run: pytest tests/data_driven/ -v --tb=short --junitxml=reports/data_driven.xml
+
+      - name: Run performance tests
+        run: pytest tests/performance/ -v --tb=short --junitxml=reports/performance.xml
+
+      - name: Generate coverage report
+        if: matrix.python-version == '3.12'
+        run: |
+          pytest tests/contract/ tests/integration/ tests/data_driven/ \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-report=html:reports/htmlcov \
+            --cov-fail-under=80 \
+            -q
+
+      - name: Generate HTML test report
+        if: always()
+        run: |
+          pytest tests/ \
+            --html=reports/test_report.html \
+            --self-contained-html \
+            --tb=short \
+            -q
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-py${{ matrix.python-version }}
+          path: reports/
+          retention-days: 30
+
+  # ── Docker build check ───────────────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t bookstore-api:ci .
+
+      - name: Smoke test container
+        run: |
+          docker run -d --name bookstore -p 8000:8000 bookstore-api:ci
+          sleep 5
+          curl --fail http://localhost:8000/health
+          docker stop bookstore
+
+  # ── Summary gate ─────────────────────────────────────────────────────────────
+  all-checks:
+    name: All Checks Passed
+    needs: [lint, test, docker]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check all jobs
+        shell: bash
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" || \
+                "${{ needs.test.result }}" != "success" || \
+                "${{ needs.docker.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+          echo "All checks passed"

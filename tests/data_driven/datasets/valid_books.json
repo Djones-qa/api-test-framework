@@ -1,0 +1,52 @@
+[
+  {
+    "id": "classic_programming",
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas",
+    "isbn": "9780135957059",
+    "price": 49.99,
+    "genre": "Programming",
+    "published_year": 2019,
+    "in_stock": true
+  },
+  {
+    "id": "science_fiction",
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "isbn": "9780441013593",
+    "price": 12.99,
+    "genre": "Science Fiction",
+    "published_year": 1965,
+    "in_stock": false
+  },
+  {
+    "id": "minimal_fields",
+    "title": "Minimal Book",
+    "author": "Some Author",
+    "isbn": "9780000000099",
+    "price": 5.00,
+    "genre": null,
+    "published_year": null,
+    "in_stock": true
+  },
+  {
+    "id": "expensive_book",
+    "title": "Enterprise Architecture Patterns",
+    "author": "Martin Fowler",
+    "isbn": "9780321127426",
+    "price": 89.99,
+    "genre": "Architecture",
+    "published_year": 2002,
+    "in_stock": true
+  },
+  {
+    "id": "old_book",
+    "title": "The Art of Computer Programming",
+    "author": "Donald Knuth",
+    "isbn": "9780201038040",
+    "price": 199.99,
+    "genre": "Computer Science",
+    "published_year": 1968,
+    "in_stock": true
+  }
+]

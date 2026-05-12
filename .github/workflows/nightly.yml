@@ -1,0 +1,42 @@
+name: Nightly Performance
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # 02:00 UTC every night
+  workflow_dispatch:        # allow manual trigger
+
+jobs:
+  performance:
+    name: Performance Regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Copy env file
+        run: cp .env.example .env
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run performance tests with verbose output
+        run: |
+          pytest tests/performance/ -v -s \
+            --tb=long \
+            --junitxml=reports/nightly_performance.xml
+
+      - name: Upload performance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-performance-${{ github.run_id }}
+          path: reports/
+          retention-days: 90

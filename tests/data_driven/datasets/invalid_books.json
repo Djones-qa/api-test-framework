@@ -1,0 +1,97 @@
+[
+  {
+    "id": "empty_title",
+    "description": "Title cannot be empty",
+    "payload": {
+      "title": "",
+      "author": "Some Author",
+      "isbn": "9780000000001",
+      "price": 10.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "title"
+  },
+  {
+    "id": "negative_price",
+    "description": "Price must be positive",
+    "payload": {
+      "title": "Bad Price Book",
+      "author": "Some Author",
+      "isbn": "9780000000002",
+      "price": -5.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "price"
+  },
+  {
+    "id": "zero_price",
+    "description": "Price must be greater than zero",
+    "payload": {
+      "title": "Zero Price Book",
+      "author": "Some Author",
+      "isbn": "9780000000003",
+      "price": 0
+    },
+    "expected_status": 422,
+    "expected_error_field": "price"
+  },
+  {
+    "id": "invalid_isbn_letters",
+    "description": "ISBN must be digits only",
+    "payload": {
+      "title": "Bad ISBN Book",
+      "author": "Some Author",
+      "isbn": "ABCDEFGHIJ",
+      "price": 10.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "isbn"
+  },
+  {
+    "id": "isbn_too_short",
+    "description": "ISBN must be 10 or 13 digits",
+    "payload": {
+      "title": "Short ISBN Book",
+      "author": "Some Author",
+      "isbn": "12345",
+      "price": 10.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "isbn"
+  },
+  {
+    "id": "missing_author",
+    "description": "Author is required",
+    "payload": {
+      "title": "No Author Book",
+      "isbn": "9780000000004",
+      "price": 10.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "author"
+  },
+  {
+    "id": "missing_isbn",
+    "description": "ISBN is required",
+    "payload": {
+      "title": "No ISBN Book",
+      "author": "Some Author",
+      "price": 10.0
+    },
+    "expected_status": 422,
+    "expected_error_field": "isbn"
+  },
+  {
+    "id": "year_too_old",
+    "description": "Published year must be >= 1000",
+    "payload": {
+      "title": "Ancient Book",
+      "author": "Some Author",
+      "isbn": "9780000000005",
+      "price": 10.0,
+      "published_year": 999
+    },
+    "expected_status": 422,
+    "expected_error_field": "published_year"
+  }
+]

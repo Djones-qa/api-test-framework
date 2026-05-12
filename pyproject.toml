@@ -1,0 +1,40 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--tb=short",
+    "--strict-markers",
+    "-q",
+]
+markers = [
+    "contract: Schema/contract validation tests",
+    "integration: Full request/response integration tests",
+    "data_driven: Parametrized data-driven tests",
+    "performance: Response time threshold tests",
+    "slow: Tests that take longer than usual",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/__init__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 80
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

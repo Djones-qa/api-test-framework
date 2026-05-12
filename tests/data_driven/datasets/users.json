@@ -1,0 +1,37 @@
+[
+  {
+    "id": "valid_standard",
+    "username": "alice",
+    "email": "alice@example.com",
+    "password": "securepass1",
+    "expected_status": 201
+  },
+  {
+    "id": "valid_long_username",
+    "username": "averylongusernamethatisvalid",
+    "email": "longuser@example.com",
+    "password": "securepass2",
+    "expected_status": 201
+  },
+  {
+    "id": "invalid_short_username",
+    "username": "ab",
+    "email": "short@example.com",
+    "password": "securepass3",
+    "expected_status": 422
+  },
+  {
+    "id": "invalid_email",
+    "username": "bademail",
+    "email": "not-an-email",
+    "password": "securepass4",
+    "expected_status": 422
+  },
+  {
+    "id": "invalid_short_password",
+    "username": "shortpass",
+    "email": "shortpass@example.com",
+    "password": "abc",
+    "expected_status": 422
+  }
+]
